@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Product;
-use GuzzleHttp\Client;
+use Goutte\Client;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ApiController extends Controller
 {
@@ -24,90 +26,23 @@ class ApiController extends Controller
 
     public function getSource($store=0)
     {
-        $client = new Client();
+        $goutteClient = new Client();
+        $guzzleClient = new GuzzleClient(array(
+            'timeout' => 90,
+            'verify' => false
+        ));
+        $goutteClient->setClient($guzzleClient);
+        $crawler = $goutteClient->request('GET', 'https://www.linio.com.mx/');
 
-        $response = $client->get('https://www.linio.com.mx/',['verify' => false]);
-
-        echo $response->getStatusCode();
-
-        //echo $response->getHeader('content-type');
-
-        echo $response->getBody();
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $crawler->filter('.product-info')->each(function ($node) {
+            $crwlr = new Crawler($node->html());
+            $crwlr->filter('.name')->each(function($nd){
+                echo $nd->text().'<br>';
+            });
+            $crwlr->filter('.price-secondary')->each(function($nd){
+                echo $nd->text().'<br>';
+            });
+            echo "-----------<br>";
+        });
     }
 }
