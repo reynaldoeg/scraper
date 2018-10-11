@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">Dashboard</div>
 
@@ -14,7 +14,24 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <div>
+                        <table class="table table-striped table-hover table-bordered">
+                            <tr>
+                                <th>Tienda</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                            </tr>
+                            @foreach($products as $prod)
+                                <tr>
+                                    <td>{{$prod->store}}</td>
+                                    <td>{{$prod->name}}</td>
+                                    <td>{{$prod->description}}</td>
+                                    <td>${{number_format($prod->price, 2)}}</td>
+                                </tr>
+                            @endforeach
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
