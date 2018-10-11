@@ -75,6 +75,7 @@ class ApiController extends Controller
                     if ($existing_product !== 1) {
                         $product = new Product;
 
+                        $product->store = 'Linio';
                         $product->name = $name;
                         $product->description = $desc;
                         $product->price = $price;
@@ -90,8 +91,50 @@ class ApiController extends Controller
                 return response()->json($resp);
 
                 break;
-            case "aws":
-                echo 'AWS<br>';
+            case "liverpool":
+                $crawler = $goutteClient->request('GET', 'https://www.liverpool.com.mx/tienda/ver-todo/catst10198216?showPLP');
+
+                $crawler->filter('.product-cell')->each(function ($node, $i) use ($number, &$resp) {
+                    if($i >= $number) return;
+
+                    $crwlr = new Crawler($node->html());
+
+                    $desc = $crwlr->filter('.product-name')->first()->text();
+                    $desc = trim($desc);
+                    $name = substr($desc, 0, strpos($desc, " "));
+
+                    $price = $crwlr->filter('.price-amount')->last()->text();
+                    $price = str_replace(",", "", $price);
+                    $price = substr($price, 0, strlen($price)-2);
+                    $price = floatval($price);
+
+                    $tmp_prod = [
+                        'name'  => $name,
+                        'desc'  => $desc,
+                        'price' => $price
+                    ];
+
+                    // Evaluar si el producto encontrado se encuentra en la DB y no reescribirlo.
+                    $existing_product = Product::where('description', $desc)->count();
+
+                    if ($existing_product !== 1) {
+                        $product = new Product;
+
+                        $product->store = 'Liverpool';
+                        $product->name = $name;
+                        $product->description = $desc;
+                        $product->price = $price;
+
+                        $product->save();
+
+                        array_push($resp['new'], $tmp_prod);
+                    } else {
+                        array_push($resp['existing'], $tmp_prod);
+                    }
+                });
+
+                return response()->json($resp);
+
                 break;
             default:
                 echo 'Tienda no reconocida';
