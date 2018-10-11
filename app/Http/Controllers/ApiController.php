@@ -20,6 +20,11 @@ class ApiController extends Controller
         return response()->json($products);
     }
 
+    public function getSource($store=0)
+    {
+        // 
+    }
+
     /**
      * Display a listing of the resource.
      *
