@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ApiController extends Controller
 {
@@ -22,7 +24,15 @@ class ApiController extends Controller
 
     public function getSource($store=0)
     {
-        // 
+        $client = new Client();
+
+        $response = $client->get('https://www.linio.com.mx/',['verify' => false]);
+
+        echo $response->getStatusCode();
+
+        //echo $response->getHeader('content-type');
+
+        echo $response->getBody();
     }
 
     /**
