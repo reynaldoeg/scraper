@@ -20,4 +20,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/products/{id?}', 'ApiController@getProducts');
-Route::get('/sources/{store?}', 'ApiController@getSource');
+Route::get('/sources/{store?}/{number?}', 'ApiController@getSource');

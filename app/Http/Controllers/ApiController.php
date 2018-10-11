@@ -24,7 +24,14 @@ class ApiController extends Controller
         return response()->json($products);
     }
 
-    public function getSource($store=0)
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $store (Para elegir la tienda)
+     * @param  int  $number (Número de productos a descargar)
+     * @return json
+     */
+    public function getSource($store='none', $number=5)
     {
         $goutteClient = new Client();
         $guzzleClient = new GuzzleClient(array(
@@ -32,17 +39,65 @@ class ApiController extends Controller
             'verify' => false
         ));
         $goutteClient->setClient($guzzleClient);
-        $crawler = $goutteClient->request('GET', 'https://www.linio.com.mx/');
 
-        $crawler->filter('.product-info')->each(function ($node) {
-            $crwlr = new Crawler($node->html());
-            $crwlr->filter('.name')->each(function($nd){
-                echo $nd->text().'<br>';
-            });
-            $crwlr->filter('.price-secondary')->each(function($nd){
-                echo $nd->text().'<br>';
-            });
-            echo "-----------<br>";
-        });
+        // Respuesta
+        $resp = [
+            'new' => [],        // Productos nuevos (se agregan)
+            'existing' => []    // Productos existentes (no se agregan)
+        ];
+
+        switch ($store) {
+            case "linio":
+                $crawler = $goutteClient->request('GET', 'https://www.linio.com.mx/');
+
+                $crawler->filter('.product-info')->each(function ($node, $i) use ($number, &$resp) {
+                    if($i >= $number) return;
+
+                    $crwlr = new Crawler($node->html());
+
+                    $desc = $crwlr->filter('.name')->first()->text();
+                    $name = substr($desc, 0, strpos($desc, " "));
+
+                    $price = $crwlr->filter('.price-secondary')->first()->text();
+                    $price = ltrim($price, '$');
+                    $price = str_replace(",", "", $price);
+                    $price = floatval($price);
+
+                    $tmp_prod = [
+                        'name'  => $name,
+                        'desc'  => $desc,
+                        'price' => $price
+                    ];
+
+                    // Evaluar si el producto encontrado se encuentra en la DB y no reescribirlo.
+                    $existing_product = Product::where('description', $desc)->count();
+
+                    if ($existing_product !== 1) {
+                        $product = new Product;
+
+                        $product->name = $name;
+                        $product->description = $desc;
+                        $product->price = $price;
+
+                        $product->save();
+
+                        array_push($resp['new'], $tmp_prod);
+                    } else {
+                        array_push($resp['existing'], $tmp_prod);
+                    }
+                });
+
+                return response()->json($resp);
+
+                break;
+            case "aws":
+                echo 'AWS<br>';
+                break;
+            default:
+                echo 'Tienda no reconocida';
+                break;
+        }
+
+                
     }
 }
