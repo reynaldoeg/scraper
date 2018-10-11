@@ -11,6 +11,11 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ApiController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('client.credentials');
+    }
+
     /**
      * Display the specified resource.
      *
@@ -50,7 +55,7 @@ class ApiController extends Controller
             case "linio":
                 $crawler = $goutteClient->request('GET', 'https://www.linio.com.mx/');
 
-                $crawler->filter('.product-info')->each(function ($node, $i) use ($number, &$resp) {
+                $crawler->filter('.product-card')->each(function ($node, $i) use ($number, &$resp) {
                     if($i >= $number) return;
 
                     $crwlr = new Crawler($node->html());
