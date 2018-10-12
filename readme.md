@@ -1,58 +1,257 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# Laravel Scraper
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Esta aplicación tiene como  funcionalidad principal ser una API que ejecute un scraper hacia algunas tiendas de e-commerce (Liverpool, Linio, etc.) y obtenga información básica de los productos (nombre, descripción, precio), almacenandolos en una base de datos para su posterior consulta.
 
-## About Laravel
+## Getting Started
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Prerequisitos
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+ - PHP >= 7.0.0
+ - Laravel 5.5
+ - MySQL 5.6
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+### Instalación
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
 
-## Laravel Sponsors
+Clonar el repositorio de github.
+```s 
+$ git clone git@github.com:reynaldoeg/scraper.git
+```
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+Entrar a la raiz del directorio
+```s 
+$ cd scraper
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Pulse Storm](http://www.pulsestorm.net/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
+Instalar dependencias con Composer
+```s 
+$ composer install
+```
 
-## Contributing
+### Configuración
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Copiar archivo .env.example y cambiarle el nombre por .env y configurar opciones locales
+```s 
+$ cp .env.example .env
+```
 
-## Security Vulnerabilities
+Configurar opciones locales y acceso a base de datos:
+```s 
+APP_NAME=Scraper
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_LOG_LEVEL=debug
+APP_URL=http://127.0.0.1
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=homestead
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+```
+
+Generar "application key"
+```s 
+$ php artisan key:generate
+```
+
+### Migraciones
+Esta aplicación incluye migraciones para crear las tablas que se utilizan y llenarlas con la información básica para su funcionamiento.
+
+Para crear el repositorio de migraciones:
+```s 
+$ php artisan migrate:install
+```
+
+Para crear las tablas:
+```s 
+$ php artisan migrate
+```
+
+Para crear usuario del sistema:
+```s 
+$ php artisan db:seed
+```
+
+### Servidor local
+
+Correr servidor local
+```s 
+$ php artisan serve
+```
+
+<p>Laravel se podrá ejecutar en la siguiente dirección <a href="http://127.0.0.1:8000" target="_blank">http://127.0.0.1:8000</a></p>
+
+Para ingresar al sistema, se pueden usar las siguientes credenciales:
+- Usuario: admin@mail.com
+- Password: 123456
+
+Aquí se podrá visualizar los productos cargados a la base de datos.
+
+## Autenticación
+
+El siguiente comando creará las claves de cifrado necesarias para generar tokens de acceso seguro:
+```s 
+$ php artisan passport:client
+```
+
+Generar claves de usuario:
+```s 
+$ php artisan passport:client
+```
+A la pregunta "Which user ID should the client be assigned to?" escribir por ejemplo:
+- 0
+
+A la pregunta "What should we name the client?" escribir por ejemplo:
+- client
+
+A la pregunta "Where should we redirect the request after authorization?" dejar la opción predeterminada.
+
+Con esto se generará el Client ID y el Client Secret necesarios para obtener el access token.
+
+### Hacer peticiones con PostMan
+Mediante el programa de [postman](https://www.getpostman.com/) o algún otro similar se pueden hacer las peticiones a la API.
+Para obtener el Acess Tiken se hace una petición al siguiente endpoint:
+```s 
+POST  http://127.0.0.1:8000/api/oauth/token  
+```
+y se envían los datos obtenidos de Client Id y Client Secret:
+- grant_type: client_credentials
+- client_id: 3
+- client_secret: xxxxxxxxxxxxxx
+
+Con lo que se obtendrá el access-token para poder hacer las peticiones
+
+```s 
+{
+    "token_type": "Bearer",
+    "expires_in": 604798,
+    "access_token": "eyJ0eXAiOi...VcJ4EY"
+} 
+```
+
+Para obtener los productos de un ecommerce por ejemplo linio, se hace la siguiente petición:
+```s 
+GET  http://127.0.0.1:8000/api/sources/linio/3  
+```
+Enviando el Header de Authorization con el access_token obtenido
+- Authorization: Bearer eyJ0eXAiOi...VcJ4EY
+
+
+## Métodos
+
+### Obtener productos de tiendas
+
+```s 
+GET  http://127.0.0.1:8000/api/sources/linio/3  
+```
+Tiendas hasta ahora disponibles:
+- linio
+- liverpool
+
+El último parámetro de la url indica el número de productos a descargar.
+Si el producto ya existe en la base de datos, ya no lo descarga.
+**Respuesta:**
+Si la petición es correcta, se regresa un json con los atributos:
+- new: con los nuevos productos que se guardan en la base
+-  existing: con los productos que ya existen y no se duplican en la base
+
+```s 
+{
+    "new": [
+        {
+            "name": "Monitor",
+            "desc": "Monitor HP 32 de 31.5’’",
+            "price": 8999
+        },
+        {
+            "name": "IPhone",
+            "desc": "IPhone XS MAX 64GB - Gold",
+            "price": 29999
+        }
+    ],
+    "existing": [
+        {
+            "name": "Monitor",
+            "desc": "Monitor HP Curvo 27b de 27''",
+            "price": 6149
+        },
+        {
+            "name": "Membresía",
+            "desc": "Membresía Linio Plus 1 año",
+            "price": 250
+        },
+        {
+            "name": "Memoria",
+            "desc": "Memoria Micro Sd Hc I 32gb Kingston Clase 10",
+            "price": 109
+        }
+    ]
+}  
+```
+### Obtener productos almacenados en la base de datos
+
+```s 
+GET  http://127.0.0.1:8000/api/products  
+```
+
+**Respuesta:**
+Si la petición es correcta, se regresa un json con todos los productos:
+
+```s 
+[
+    {
+        "id": 1,
+        "store": "Linio",
+        "name": "Monitor",
+        "description": "Monitor HP Curvo 27b de 27''",
+        "price": "6149",
+        "created_at": "2018-10-11 23:20:46",
+        "updated_at": "2018-10-11 23:20:46"
+    },
+    {
+        "id": 2,
+        "store": "Linio",
+        "name": "Membresía",
+        "description": "Membresía Linio Plus 1 año",
+        "price": "250",
+        "created_at": "2018-10-11 23:20:46",
+        "updated_at": "2018-10-11 23:20:46"
+    },
+    {
+        "id": 3,
+        "store": "Linio",
+        "name": "Memoria",
+        "description": "Memoria Micro Sd Hc I 32gb Kingston Clase 1",
+        "price": "109",
+        "created_at": "2018-10-11 23:20:46",
+        "updated_at": "2018-10-11 23:20:46"
+    }
+]
+```
+Para limitar la petición a productos de una tienda se puede incluir un parámetro en la url con el nombre de la misma:
+
+```s 
+GET  http://127.0.0.1:8000/api/products/linio  
+```
+
+```s 
+GET  http://127.0.0.1:8000/api/products/liverpool  
+```
+Tiendas hasta ahora disponibles:
+- linio
+- liverpool
+
+## Authors
+
+* **Reynaldo Esparza**  - [Github](https://github.com/reynaldoeg)
+
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
