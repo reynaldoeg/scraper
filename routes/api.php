@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/products/{id?}', 'ApiController@getProducts');
+Route::get('/products/{store?}', 'ApiController@getProducts');
 Route::get('/sources/{store?}/{number?}', 'ApiController@getSource');
 
 Route::post('oauth/token', '\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken');

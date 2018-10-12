@@ -13,7 +13,7 @@ class ApiController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('client.credentials');
+        //$this->middleware('client.credentials');
     }
 
     /**
@@ -22,9 +22,22 @@ class ApiController extends Controller
      * @param  int  $id
      * @return json
      */
-    public function getProducts($id=0)
+    public function getProducts($store='all')
     {
-        $products = Product::all()->toArray();
+        switch ($store) {
+            case 'all':
+                $products = Product::all()->toArray();
+                break;
+            case 'linio':
+                $products = Product::where('store', 'Linio')->get()->toArray();
+                break;
+            case 'liverpool':
+                $products = Product::where('store', 'Liverpool')->get()->toArray();
+                break;
+            default:
+                $products = [];
+                break;
+        }
 
         return response()->json($products);
     }
