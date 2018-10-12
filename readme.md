@@ -32,7 +32,7 @@ $ composer install
 
 ### Configuración
 
-Copiar archivo .env.example y cambiarle el nombre por .env y configurar opciones locales
+Copiar archivo .env.example y cambiarle el nombre por .env
 ```s 
 $ cp .env.example .env
 ```
@@ -96,7 +96,7 @@ Aquí se podrá visualizar los productos cargados a la base de datos.
 
 El siguiente comando creará las claves de cifrado necesarias para generar tokens de acceso seguro:
 ```s 
-$ php artisan passport:client
+$ php artisan passport:install
 ```
 
 Generar claves de usuario:
