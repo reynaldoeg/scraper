@@ -115,7 +115,7 @@ Con esto se generará el Client ID y el Client Secret necesarios para obtener el
 
 ### Hacer peticiones con PostMan
 Mediante el programa de [postman](https://www.getpostman.com/) o algún otro similar se pueden hacer las peticiones a la API.
-Para obtener el Acess Tiken se hace una petición al siguiente endpoint:
+Para obtener el Acess Token se hace una petición al siguiente endpoint:
 ```s 
 POST  http://127.0.0.1:8000/api/oauth/token  
 ```

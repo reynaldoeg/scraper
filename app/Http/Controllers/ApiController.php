@@ -13,7 +13,7 @@ class ApiController extends Controller
 {
     public function __construct()
     {
-        //$this->middleware('client.credentials');
+        $this->middleware('client.credentials');
     }
 
     /**
